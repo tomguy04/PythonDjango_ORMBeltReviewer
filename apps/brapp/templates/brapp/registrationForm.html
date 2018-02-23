@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <!-- style sheet here -->
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'logreg_app/css/style.css' %}" media="screen" title="no title"  charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'brapp/css/style.css' %}" media="screen" title="no title"  charset="utf-8">
     <title>Document</title>
 </head>
     <body>
@@ -27,6 +27,7 @@
             {% endif %}
             --REGISTER--
             <!-- REGISTRATION -->
+        
             <form action='/doregister' method='post'>
                 {% csrf_token %}
                 <div id='fields'>

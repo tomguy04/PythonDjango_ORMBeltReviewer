@@ -16,12 +16,12 @@ def index(request):
   return render(request,"brapp/registrationForm.html")
 
 def doregister(request):
-    # errors = User.objects.basic_validator(request.POST)
-    # if len(errors):
-    #     for tag, error in errors.iteritems():
-    #         messages.error(request, error, extra_tags=tag)
-    #     return redirect('/')
-    # else:
+    errors = User.objects.basic_validator(request.POST)
+    if len(errors):
+        for tag, error in errors.iteritems():
+            messages.error(request, error, extra_tags=tag)
+        return redirect('/')
+    else:
         u1 = User(name = request.POST['name'], alias = request.POST['alias'], email = request.POST['email'], password = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()))
         u1.save()
         # request.session['id']=u1.id
@@ -59,16 +59,14 @@ def books(request):
         user_name = u.name
         print "user name is " + user_name
         context = {
-            'user' : user_name
+            'user' : user_name,
+            # 'reviews':Review.objects.all().distinct(),
+            'reviews':Review.objects.all(),
+            # 'reviews':Review.objects.distinct(books.title),
+            '3rev' : Review.objects.order_by('-created_at')[:3][::1]
         }
         return render(request, "brapp/dashboard.html", context) 
-    # else:
-    #     user_name = request.session['first_name']
-    #     context = {
-    #         'user' : user_name,
-    #         'message' : 'you registerd.'
-    #     }
-    #     return render(request, "logreg_app/dashboard.html", context) 
+   
 
 def getabook(request):
     return render(request, "brapp/booksadd.html")
@@ -85,7 +83,7 @@ def processbook(request):
         # r1.books.add(b1)
         b1.reviews.add(r1)
         u1 = User.objects.get(id=request.session['id'])
-        u1.reviews.add(r1)
+        u1.userreviews.add(r1)
         # b1.review = r1
         # b1.save()
 
@@ -113,12 +111,30 @@ def bookwall(request,bookid):
         'title':Book.objects.get(id=bookid).title,
         'bookid':bookid,
         'author':Book.objects.get(id=bookid).author,
-        # 'review':Book.objects.get(id=bookid).reviews
-        # 'review':Book.reviews.all()
         'review':Book.objects.get(id=bookid).reviews.all()
+        # 'review':Book.objects.get(id=bookid).distinct('title')
+        # ModelName.objects.distinct('fieldname')
 
     }
     return render(request, "brapp/bookinfo.html", context)
+
+def users(request,uid):
+    context = {
+        'u' : User.objects.get(id=uid),
+        'total_reviews':Review.objects.filter(users=uid).count(),
+        # 'review':Review.objects.filter(users=uid)
+         'review':Review.objects.filter(users=uid)
+        
+            # models.Shop.objects.order_by().values('city').distinct()
+
+    }
+    return render(request, "brapp/user.html", context)
+
+def delete_review(request, rid, bookid):
+    r = Review.objects.get(id=rid)
+    r.delete()
+    bookurl = '/books/' +str(bookid)
+    return redirect(bookurl)
 
 
 def logout(request):

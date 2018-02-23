@@ -3,14 +3,12 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-# class CourseManager(models.Manager):
-#     def basic_validator(self, postData):
-#         errors = {}
-#         if len(postData['name']) < 6:
-#             errors["name"] = "course name must be more than 5 characters"
-#         if len(postData['description']) < 16:
-#             errors["description"] = "description must be more than 15 characters."
-#         return errors
+class UserManager(models.Manager):
+    def basic_validator(self, postData):
+        errors = {}
+        if len(postData['password']) < 8:
+            errors["name"] = "password must be at least 8 characters"
+        return errors
 
 class Author(models.Model):
     name = models.CharField(max_length=255)
@@ -35,8 +33,10 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = UserManager()
     def __str__(self):
          return self.name
+
     # reviews = models.ForeignKey(Review, related_name = 'users', blank = True, null = True)
 
 class Review(models.Model):
@@ -44,6 +44,8 @@ class Review(models.Model):
     stars = models.IntegerField()
     books = models.ForeignKey(Book, related_name = 'reviews', blank = True, null = True)
     users = models.ForeignKey(User, related_name = 'userreviews',  blank = True, null = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # def __str__(self):
     #     return self.description
 

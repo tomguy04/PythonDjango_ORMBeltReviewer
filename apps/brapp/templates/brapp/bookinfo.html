@@ -11,7 +11,13 @@
     <p>Author: {{author}}</p>
     <h2>Reviews:</h2>
     {% for data in review %}
-        {{data.description}}  {{data.stars}} stars {{data.users}}
+        <p>{{data.description}}  {{data.stars}} stars {{data.users}}</p>
+
+        {% if request.session.id == data.users.id %}
+			<a href="/delete_review/{{data.id}}/{{bookid}}">delete</a>
+		{% endif %}
+
+
     {% endfor %}
     <h2>Add Review</h2>
     <form action='/books/processreview/{{bookid}}/' method='post'>

@@ -84,6 +84,8 @@ def processbook(request):
         r1.save()
         # r1.books.add(b1)
         b1.reviews.add(r1)
+        u1 = User.objects.get(id=request.session['id'])
+        u1.reviews.add(r1)
         # b1.review = r1
         # b1.save()
 
@@ -97,6 +99,9 @@ def processreview(request,bookid):
     r1 = Review(description = request.POST['review'], stars = request.POST['stars'])
     r1.save()
     b1.reviews.add(r1)
+    u1 = User.objects.get(id=request.session['id'])
+    u1.save()
+    u1.userreviews.add(r1)
     bookurl = '/books/' +str(bookid)
     return redirect (bookurl)
 

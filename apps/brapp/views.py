@@ -90,12 +90,23 @@ def processbook(request):
     # booktitle = request.POST['name']
         bookurl = '/books/' +str(b1.id)
         return redirect (bookurl)
-    
+
+def processreview(request,bookid):
+    b1 = Book.objects.get(id=bookid)
+    b1.save()
+    r1 = Review(description = request.POST['review'], stars = request.POST['stars'])
+    r1.save()
+    b1.reviews.add(r1)
+    bookurl = '/books/' +str(bookid)
+    return redirect (bookurl)
+
+
 
 def bookwall(request,bookid):
     # print '*************bookid ' + bookid
     context = {
         'title':Book.objects.get(id=bookid).title,
+        'bookid':bookid,
         'author':Book.objects.get(id=bookid).author,
         # 'review':Book.objects.get(id=bookid).reviews
         # 'review':Book.reviews.all()

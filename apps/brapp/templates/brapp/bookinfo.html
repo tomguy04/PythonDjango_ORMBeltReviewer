@@ -14,10 +14,11 @@
         {{data.description}}  {{data.stars}} stars
     {% endfor %}
     <h2>Add Review</h2>
-    <form action='/books/processbook/' method='post'>
+    <form action='/books/processreview/{{bookid}}/' method='post'>
         {% csrf_token %}
         <!-- <div id='fields'> -->
             <!-- <p>Book Title : <input type='text' name={{title}}></p> -->
+            <input type="hidden" name="title" value={{title}}>
             <input type="hidden" name="title" value={{title}}>
             <p>Review : <textarea name="review" rows="10" cols="30"></textarea></p>
             <p>Rating: <select name="stars">

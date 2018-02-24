@@ -36,21 +36,27 @@ def login(request):
     post_email = request.POST["email"]
     print "*****************post_email " + post_email
     print "*****************post_pass " + post_password
- 
-    try:
-        u = User.objects.get(email = post_email)
-        print "****************successful try"
-        u.save()
-        print u.id
-        if bcrypt.checkpw(post_password.encode(), u.password.encode()):
-            print "password match"
-            request.session['id']=u.id
-            print "*********** "
-            print request.session['id']
-            return redirect('/books')
+    
+    errors = User.objects.basic_validator(request.POST)
+    if len(errors):
+        for tag, error in errors.iteritems():
+            messages.error(request, error, extra_tags=tag)
         return redirect('/')
-    except:
-        return redirect('/')
+    else:
+        try:
+            u = User.objects.get(email = post_email)
+            print "****************successful try"
+            u.save()
+            print u.id
+            if bcrypt.checkpw(post_password.encode(), u.password.encode()):
+                print "password match"
+                request.session['id']=u.id
+                print "*********** "
+                print request.session['id']
+                return redirect('/books')
+            return redirect('/')
+        except:
+            return redirect('/')
     
 def books(request):
     if 'id' in request.session:
@@ -58,10 +64,18 @@ def books(request):
         u = User.objects.get(id = request.session['id'])
         user_name = u.name
         print "user name is " + user_name
+        
+        unique_reviews = []
+        reviews = Review.objects.all()
+        for review in reviews:
+            if review.books not in unique_reviews:
+                unique_reviews.append(review.books)
+
         context = {
             'user' : user_name,
             # 'reviews':Review.objects.all().distinct(),
-            'reviews':Review.objects.all(),
+            # 'reviews':Review.objects.all(),
+            'reviews' : unique_reviews,
             # 'reviews':Review.objects.distinct(books.title),
             '3rev' : Review.objects.order_by('-created_at')[:3][::1]
         }
@@ -74,7 +88,13 @@ def getabook(request):
 def processbook(request): 
         b1 = Book(title = request.POST['title'])
         b1.save()
-        a1 = Author(name = request.POST['author'])
+               
+        # a1 = Author(name = request.POST['author'])
+        if request.POST['author']!='':
+            a1 = Author(name = request.POST['author'])
+        else:
+            a1 = Author(name = request.POST['authors'])
+
         a1.save()
         b1.author = a1
         b1.save()
@@ -119,14 +139,18 @@ def bookwall(request,bookid):
     return render(request, "brapp/bookinfo.html", context)
 
 def users(request,uid):
+
+    user_unique_reviews = []
+    reviews = Review.objects.filter(users=uid)
+    for review in reviews:
+        if review.books not in user_unique_reviews:
+            user_unique_reviews.append(review.books)
     context = {
         'u' : User.objects.get(id=uid),
         'total_reviews':Review.objects.filter(users=uid).count(),
         # 'review':Review.objects.filter(users=uid)
-         'review':Review.objects.filter(users=uid)
-        
-            # models.Shop.objects.order_by().values('city').distinct()
-
+        #  'review':Review.objects.filter(users=uid)
+         'reviews':user_unique_reviews
     }
     return render(request, "brapp/user.html", context)
 

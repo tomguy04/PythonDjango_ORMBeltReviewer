@@ -6,7 +6,7 @@
 <body>
 	<!-- <h1>Welcome {{request.session.first_name}}</h1>
 	your registered. -->
-    Welcome {{user}}
+    Welcome {{user}} <a href="/logout">Logout</a>
     <a href="/books/add">add book and review</a>
 	<!-- <a href="/logout">Logout</a> -->
 	<p>Recent Book Reviews</p>
@@ -19,8 +19,9 @@
 		{% endfor %}
 			<!-- <p>data.</p> -->
 	<p>Other books with reviews</p>
-	{% for data in reviews %}
-		<p>Title:  {{data.books.title}}</p>
+	
+    {% for data in reviews %}
+		<p>Title:  <a href="/books/{{data.id}}">{{data.title}}</a></p>
 	{% endfor %}
 
 	

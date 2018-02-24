@@ -12,8 +12,12 @@
     <p>Email: {{u.email}}</p>
     <p>Total Reviews: {{total_reviews}}</p>   
     <p>Book Reviews</p>
-    {% for data in review %}
-        <p><a href="/books/{{data.books.id}}">{{data.books.title}}</a></p>
+    {% for data in reviews %}
+        <p>Title:  <a href="/books/{{data.id}}">{{data.title}}</a></p>
     {% endfor %}
+
+    <!-- {% for data in review %}
+        <p><a href="/books/{{data.books.id}}">{{data.books.title}}</a></p>
+    {% endfor %} -->
 </body>
 </html>
